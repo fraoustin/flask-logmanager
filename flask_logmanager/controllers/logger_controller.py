@@ -2,8 +2,8 @@ import json
 from flask import request
 from flask_logmanager.models.error_model import ErrorModel
 from flask_logmanager.models.logger import Logger
-from flask_logmanager.models.loggers import Loggers, NotFoundLoggerError, NotAddLoggerError 
-from ..util import Error
+from flask_logmanager.models.loggers import Loggers 
+from ..util import NotFoundLoggerError, NotAddLoggerError, Error
 
 
 def get_logger(loggerId):
@@ -22,7 +22,7 @@ def get_logger(loggerId):
     except NotAddLoggerError as e:
         return e.to_problem()
     else: 
-        return Error(status=500, title='Error System', type='UNKNOW', value=e.__str__()).to_problem()   
+        return Error(status=500, title='Error System', type='UNKNOW', detail=e.__str__()).to_problem()   
 
     
 
@@ -54,14 +54,12 @@ def set_logger(loggerId):
     try:
         data = json.loads(request.data.decode())
         if loggerId != data['id']:
-            return Error(status=405, title='invalid INPUT', type='RG-003', value='loggerId is not compatible with logger object').to_problem()
+            return Error(status=405, title='invalid INPUT', type='RG-003', detail='loggerId is not compatible with logger object').to_problem()
         body = Logger().from_dict(data)
         return json.dumps(data)
     except ValueError as e:
-            return Error(status=405, title='invalid INPUT', type='RG-004', value='not json body').to_problem()
+            return Error(status=405, title='invalid INPUT', type='RG-004', detail='not json body').to_problem()
     except NotFoundLoggerError as e:
         return e.to_problem()
-    except NotAddLoggerError as e:
-        return e.to_problem()
     else: 
-        return Error(status=500, title='Error System', type='UNKNOW', value=e.__str__()).to_problem()   
+        return Error(status=500, title='Error System', type='UNKNOW', detail=e.__str__()).to_problem()   

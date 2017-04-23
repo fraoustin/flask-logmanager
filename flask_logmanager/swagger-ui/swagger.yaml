@@ -113,6 +113,9 @@ definitions:
       level:
         type: "string"
         description: "level of logger"
+      rule:
+        type: "string"
+        description: "rule of logger"
   errorModel:
     type: object
     properties:

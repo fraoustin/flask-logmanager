@@ -13,6 +13,7 @@ class Model(object):
                 setattr(self, attr, data[attr])
             else:
                 Error(status=501, title='Error System', type='invalid input', value="%s not initialized by dict" % self.__class__.__name__)   
+        return self
 
     def to_dict(self):
         """

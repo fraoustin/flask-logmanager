@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import logging
+from logging import Logger, getLogger, DEBUG
 from os.path import join, dirname
 from flask import Blueprint, current_app, send_from_directory, redirect, request, send_file
 from flask_logmanager.controllers.logger_controller import get_loggers, get_logger, set_logger
@@ -17,55 +17,34 @@ def static_web(filename):
     return send_from_directory(join(dirname(__file__),'swagger-ui'),filename)
 
 
-class LoggerByRule(logging.Logger):
+class LoggerByRule(Logger):
 
     def __init__(self, name, level):
-        logging.Logger.__init__(self, name, level)
+        Logger.__init__(self, name, level)
+    
+    def get_logger_by_rule(self, rule):
+        for logger in Logger.manager.loggerDict:
+            try:
+                if getLogger(logger)._rule == rule:
+                    return getLogger(logger)
+            except:
+                pass
+        return getLogger()
 
     def debug(self, msg, *args, **kwargs):  
-        try:
-            if request.url_rule.rule.replace('/','>') in logging.Logger.manager.loggerDict: 
-                logging.getLogger(request.url_rule.rule.replace('/','>')).debug(msg, *args, **kwargs)
-            else:
-                raise Exception('logger not found')
-        except:
-            logging.Logger.debug(self, msg, *args, **kwargs)
+        self.get_logger_by_rule(request.url_rule.rule).debug(msg, *args, **kwargs)
 
     def info(self, msg, *args, **kwargs):  
-        try:
-            if request.url_rule.rule.replace('/','>') in logging.Logger.manager.loggerDict: 
-                logging.getLogger(request.url_rule.rule.replace('/','>')).info(msg, *args, **kwargs)
-            else:
-                raise Exception('logger not found')
-        except:
-            logging.Logger.info(self, msg, *args, **kwargs)
+        self.get_logger_by_rule(request.url_rule.rule).info(msg, *args, **kwargs)
 
     def warning(self, msg, *args, **kwargs):  
-        try:
-            if request.url_rule.rule.replace('/','>') in logging.Logger.manager.loggerDict: 
-                logging.getLogger(request.url_rule.rule.replace('/','>')).warning(msg, *args, **kwargs)
-            else:
-                raise Exception('logger not found')
-        except:
-            logging.Logger.warning(self, msg, *args, **kwargs)
+        self.get_logger_by_rule(request.url_rule.rule).warning(msg, *args, **kwargs)
 
     def error(self, msg, *args, **kwargs):  
-        try:
-            if request.url_rule.rule.replace('/','>') in logging.Logger.manager.loggerDict: 
-                logging.getLogger(request.url_rule.rule.replace('/','>')).error(msg, *args, **kwargs)
-            else:
-                raise Exception('logger not found')
-        except:
-            logging.Logger.error(self, msg, *args, **kwargs)
+        self.get_logger_by_rule(request.url_rule.rule).error(msg, *args, **kwargs)
 
     def critical(self, msg, *args, **kwargs):  
-        try:
-            if request.url_rule.rule.replace('/','>') in logging.Logger.manager.loggerDict: 
-                logging.getLogger(request.url_rule.rule.replace('/','>')).critical(msg, *args, **kwargs)
-            else:
-                raise Exception('logger not found')
-        except:
-            logging.Logger.critical(self, msg, *args, **kwargs)
+        self.get_logger_by_rule(request.url_rule.rule).critical(msg, *args, **kwargs)
 
 class LogManager(Blueprint):
 
@@ -81,6 +60,7 @@ class LogManager(Blueprint):
             self.before_app_first_request(self._add_dynamics_logger)
 
     def _add_dynamics_logger(self):
+        current_app.logger.debug('start init of logManager')
         #reset level of logger
         current_app.logger.debug('reset level of logger')
         levels = [current_app.logger.getEffectiveLevel(),]
@@ -88,20 +68,24 @@ class LogManager(Blueprint):
         effectiveLevel = max(levels)
         current_app.logger.setLevel(effectiveLevel)
         for h in current_app.logger.handlers:
-            h.setLevel(logging.DEBUG)
+            h.setLevel(DEBUG)
         #dynamic logger
         current_app.logger.debug('add dynamic logger')
+        no = 0
         for rule in current_app.url_map.iter_rules():
             current_app.logger.debug(rule.rule)
-            l = logging.getLogger(rule.rule.replace('/','>'))
+            l = getLogger("logManager-%s" % no)
             l.setLevel(current_app.logger.level)
+            l._rule = rule.rule
             for h in current_app.logger.handlers:
                 l.addHandler(h)
+            no = no +1    
         #change current_app.logger
         logger_by_rule = LoggerByRule(current_app.logger.name, current_app.logger.level)
         for h in current_app.logger.handlers:
             logger_by_rule.addHandler(h)
-        logging.Logger.manager.loggerDict[current_app.logger.name]=logger_by_rule
+        Logger.manager.loggerDict[current_app.logger.name]=logger_by_rule
         current_app._logger=logger_by_rule
+        current_app.logger.debug('end init of LogManager')
 
 

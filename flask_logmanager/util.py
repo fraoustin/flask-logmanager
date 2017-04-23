@@ -6,14 +6,14 @@ from .models.error_model import ErrorModel
 class Error(Exception, ErrorModel):
     
     def __init__(self, status=400, title=None, type=None,
-                      instance=None, headers=None, key=None):
+                      instance=None, headers=None, detail=None):
         Exception.__init__(self)
-        ErrorModel.__init__(self, status, type, title, key, instance)
-        self._key = key
+        ErrorModel.__init__(self, status, type, title, detail, instance)
+        self._detail = detail
         self.headers = headers
 
     def __str__(self):
-        return self._key
+        return self._detail
 
     def to_problem(self):
         flask.current_app.logger.error("{url} {type} {error}".format(url=flask.request.url, 
@@ -30,5 +30,29 @@ class Error(Exception, ErrorModel):
         if self.headers:
             response.headers.extend(headers)
         return response
+
+class NotFoundLoggerError(Error):
+
+    def __init__(self, detail=""):
+        Error.__init__(self,
+            status=404,
+            title="Not Found Logger",
+            type="RG-001",
+            detail=detail)
+
+    def __str__(self):
+        return "%s logger not found" % self._detail
+
+class NotAddLoggerError(Error):
+
+    def __init__(self):
+        Error.__init__(self,
+            status=404,
+            title="Not Add Logger",
+            type="RG-002",
+            detail="")
+
+    def __str__(self):
+        return "not logger add"
 
 

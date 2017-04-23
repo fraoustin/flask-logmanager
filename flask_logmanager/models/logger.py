@@ -1,17 +1,23 @@
 # coding: utf-8
 try:
     #python3
-    from logging import _nameToLevel as loggingLevel
+    from logging import _nameToLevel, _levelToName
+    loggingLevel = _nameToLevel
+    for k in _levelToName:
+        loggingLevel[k] = _levelToName[k]
 except:
     #python2
     from logging import _levelNames as loggingLevel
 from logging import getLogger
+from logging import Logger as loggingLogger
 
 from .base_model_ import Model
+from ..util import NotFoundLoggerError
+
 
 
 class Logger(Model):
-    def __init__(self, id=None, level=None):
+    def __init__(self, id=None, level=None, rule=None):
         """
         Logger 
 
@@ -20,8 +26,13 @@ class Logger(Model):
         :param level: The level of this Logger.
         :type level: str
         """
-        self._id = id
         self._level = level
+        self._rule = rule
+        # if get id, i check and search value from logging module
+        if id:
+            self.id = id
+        else:
+            self._id = id
 
     @property
     def id(self):
@@ -45,8 +56,17 @@ class Logger(Model):
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")
-
+        if id not in loggingLogger.manager.loggerDict:
+            raise NotFoundLoggerError(id)
         self._id = id
+        if self._level:
+            self.level = self._level
+        else:
+            self.level = loggingLevel[getLogger(id).level]
+        if self._rule:
+            self.rule = self._rule
+        else:
+            self.rule =  '_rule' in getLogger(id).__dict__ and getLogger(id)._rule or None
 
     @property
     def level(self):
@@ -75,6 +95,31 @@ class Logger(Model):
         if self.id is not None:
             getLogger(self.id).setLevel(loggingLevel[level])
         self._level = level    
+
+    @property
+    def rule(self):
+        """
+        Gets the rule of this Logger.
+        rule of logger
+
+        :return: The rule of this Logger.
+        :rtype: str
+        """
+        return self._rule
+
+    @rule.setter
+    def rule(self, rule):
+        """
+        Sets the rule of this Logger.
+        rule of logger
+
+        :param rule: The rule of this Logger.
+        :type rule: str
+        """
+        if self.id is not None:
+            getLogger(self.id)._rule = rule
+        self._rule = rule
+
 
     def __lt__(self, other):
         return self.id < other.id
