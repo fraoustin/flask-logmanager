@@ -1,16 +1,5 @@
 # coding: utf-8
-try:
-    #python3
-    from logging import _nameToLevel, _levelToName
-    loggingLevel = _nameToLevel
-    for k in _levelToName:
-        loggingLevel[k] = _levelToName[k]
-except:
-    #python2
-    from logging import _levelNames as loggingLevel
-from logging import getLogger
-from logging import Logger as loggingLogger
-
+from flask_logmanager import loggingLevel, getLogger, loggerDict
 from .base_model_ import Model
 from ..util import NotFoundLoggerError
 
@@ -56,7 +45,7 @@ class Logger(Model):
         """
         if id is None:
             raise ValueError("Invalid value for `id`, must not be `None`")
-        if id not in loggingLogger.manager.loggerDict:
+        if id not in loggerDict:
             raise NotFoundLoggerError(id)
         self._id = id
         if self._level:

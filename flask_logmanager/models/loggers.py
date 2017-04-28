@@ -1,11 +1,5 @@
 # coding: utf-8
-import logging
-try:
-    #python3
-    from logging import _levelToName as loggingLevel
-except:
-    #python2
-    from logging import _levelNames as loggingLevel
+from flask_logmanager import loggerDict, loggingLevel
 from .logger import Logger
 from ..util import NotFoundLoggerError, NotAddLoggerError
 
@@ -15,7 +9,7 @@ class Loggers(list):
     """
     def __init__(self):
         list.__init__(self)
-        for id in logging.Logger.manager.loggerDict:
+        for id in loggerDict:
             list.append(self, Logger(id=id))
 
     def append(self, el):

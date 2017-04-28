@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from logging import Logger, getLogger, DEBUG
+from flask_logmanager import Logger, getLogger, DEBUG
 from os.path import join, dirname
 from flask import Blueprint, current_app, send_from_directory, redirect, request, send_file
 from flask_logmanager.controllers.logger_controller import get_loggers, get_logger, set_logger
@@ -9,42 +9,43 @@ from flask_logmanager.controllers.logger_controller import get_loggers, get_logg
 def static_web_index():
     return send_from_directory(join(dirname(__file__),'swagger-ui'),"index.html")
 
-
-
 def static_web(filename):
     if filename == "index.html":
         return redirect(request.url[:-1 * len('index.html')])
     return send_from_directory(join(dirname(__file__),'swagger-ui'),filename)
 
+def get_logger_by_rule(rule):
+    for logger in Logger.manager.loggerDict:
+        try:
+            if getLogger(logger)._rule == rule:
+                return getLogger(logger)
+        except:
+            pass
+    return current_app.logger
 
-class LoggerByRule(Logger):
+def debug(msg, *args, **kwargs):  
+    Logger.debug(get_logger_by_rule(request.url_rule.rule), msg, *args, **kwargs)
 
-    def __init__(self, name, level):
-        Logger.__init__(self, name, level)
-    
-    def get_logger_by_rule(self, rule):
-        for logger in Logger.manager.loggerDict:
-            try:
-                if getLogger(logger)._rule == rule:
-                    return getLogger(logger)
-            except:
-                pass
-        return getLogger()
+def info(msg, *args, **kwargs):  
+    Logger.info(get_logger_by_rule(request.url_rule.rule), msg, *args, **kwargs)
 
-    def debug(self, msg, *args, **kwargs):  
-        self.get_logger_by_rule(request.url_rule.rule).debug(msg, *args, **kwargs)
+def warning(msg, *args, **kwargs):  
+    Logger.warning(get_logger_by_rule(request.url_rule.rule), msg, *args, **kwargs)
 
-    def info(self, msg, *args, **kwargs):  
-        self.get_logger_by_rule(request.url_rule.rule).info(msg, *args, **kwargs)
+def error(msg, *args, **kwargs):  
+    Logger.error(get_logger_by_rule(request.url_rule.rule), msg, *args, **kwargs)
 
-    def warning(self, msg, *args, **kwargs):  
-        self.get_logger_by_rule(request.url_rule.rule).warning(msg, *args, **kwargs)
+def critical(msg, *args, **kwargs):  
+    Logger.critical(get_logger_by_rule(request.url_rule.rule), msg, *args, **kwargs)
 
-    def error(self, msg, *args, **kwargs):  
-        self.get_logger_by_rule(request.url_rule.rule).error(msg, *args, **kwargs)
-
-    def critical(self, msg, *args, **kwargs):  
-        self.get_logger_by_rule(request.url_rule.rule).critical(msg, *args, **kwargs)
+def addHandler(hl):
+    for logger in Logger.manager.loggerDict:
+        try:
+            if getLogger(logger)._rule == rule:
+                getLogger(logger).addHandler(hl)
+        except:
+            pass
+    return Logger.addHandler(hl) 
 
 class LogManager(Blueprint):
 
@@ -81,11 +82,12 @@ class LogManager(Blueprint):
                 l.addHandler(h)
             no = no +1    
         #change current_app.logger
-        logger_by_rule = LoggerByRule(current_app.logger.name, current_app.logger.level)
-        for h in current_app.logger.handlers:
-            logger_by_rule.addHandler(h)
-        Logger.manager.loggerDict[current_app.logger.name]=logger_by_rule
-        current_app._logger=logger_by_rule
+        current_app.logger.debug = debug
+        current_app.logger.info = info
+        current_app.logger.critical = critical
+        current_app.logger.warning = warning
+        current_app.logger.error = error
+        current_app.logger.addHandler = addHandler
         current_app.logger.debug('end init of LogManager')
 
 

@@ -3,9 +3,9 @@ from flask import request
 from flask_logmanager.models.error_model import ErrorModel
 from flask_logmanager.models.logger import Logger
 from flask_logmanager.models.loggers import Loggers 
-from ..util import NotFoundLoggerError, NotAddLoggerError, Error
+from ..util import NotFoundLoggerError, NotAddLoggerError, Error, to_json
 
-
+@to_json
 def get_logger(loggerId):
     """
     Find logger by ID
@@ -15,18 +15,12 @@ def get_logger(loggerId):
 
     :rtype: Logger
     """
-    try:
-        return json.dumps(Loggers().getLogger(loggerId).to_dict())
-    except NotFoundLoggerError as e:
-        return e.to_problem()
-    except NotAddLoggerError as e:
-        return e.to_problem()
-    else: 
-        return Error(status=500, title='Error System', type='UNKNOW', detail=e.__str__()).to_problem()   
-
-    
+    return Loggers().getLogger(loggerId).to_dict()
 
 
+   
+
+@to_json
 def get_loggers():
     """
     list of logger
@@ -36,10 +30,10 @@ def get_loggers():
     """
     logs = [logger for logger in Loggers()]
     logs.sort()
-    return json.dumps([ logger.to_dict() for logger in logs ])
+    return [ logger.to_dict() for logger in logs ]
 
 
-
+@to_json
 def set_logger(loggerId):
     """
     Updates a logger with form data
@@ -51,15 +45,8 @@ def set_logger(loggerId):
 
     :rtype: None
     """
-    try:
-        data = json.loads(request.data.decode())
-        if loggerId != data['id']:
-            return Error(status=405, title='invalid INPUT', type='RG-003', detail='loggerId is not compatible with logger object').to_problem()
-        body = Logger().from_dict(data)
-        return json.dumps(data)
-    except ValueError as e:
-            return Error(status=405, title='invalid INPUT', type='RG-004', detail='not json body').to_problem()
-    except NotFoundLoggerError as e:
-        return e.to_problem()
-    else: 
-        return Error(status=500, title='Error System', type='UNKNOW', detail=e.__str__()).to_problem()   
+    data = json.loads(request.data.decode())
+    if loggerId != data['id']:
+        return Error(status=405, title='invalid INPUT', type='RG-003', detail='loggerId is not compatible with logger object')
+    body = Logger().from_dict(data)
+    return data

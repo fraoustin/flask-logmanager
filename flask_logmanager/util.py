@@ -55,4 +55,15 @@ class NotAddLoggerError(Error):
     def __str__(self):
         return "not logger add"
 
+def to_json(fn):
+    def _request_fn(*args, **kw):
+        try:
+            fn_exec = fn(*args, **kw)
+            return json.dumps(fn_exec)
+        except Error as e:
+            return e.to_problem()
+        else:
+            return Error(status=500, title='Error System', type='UNKNOW', detail=e.__str__()).to_problem()   
 
+
+    return _request_fn
