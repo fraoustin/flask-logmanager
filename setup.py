@@ -29,7 +29,7 @@ with open('CLASSIFIERS.txt') as f:
 # AUTHORS
 with open('AUTHORS.txt') as f:
     DATA = f.read().splitlines()
-    AUTHORS = ','.join([i.split('::')[0] for i in DATA    AUTHORS_EMAIL = ','.join([i.split('::')[1] for i in DATA])
+    AUTHORS = ','.join([i.split('::')[0] for i in DATA])
     AUTHORS_EMAIL = ','.join([i.split('::')[1] for i in DATA])
 
 setup(
