@@ -1,0 +1,132 @@
+---
+swagger: "2.0"
+info:
+  description: "API for management logger by Flask"
+  version: "1.0.0"
+  title: "Management Logger for Flask"
+  contact:
+    name: "fraoustin@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "127.0.0.1:8080"
+basePath: "/api"
+schemes:
+- "http"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /loggers:
+    get:
+      tags:
+        - "logger"
+      summary: "list of logger"
+      description: "Returns list of logger"
+      operationId: "get_loggers"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "List of logger"
+          schema:
+            type: "array"
+            title: "loggers"
+            items:
+              $ref: "#/definitions/logger"
+        400:
+          description: "Invalid logger"
+          schema:
+            $ref: '#/definitions/errorModel'
+  /logger/{loggerId}:
+    get:
+      tags:
+        - "logger"
+      summary: "Find logger by ID"
+      description: "Returns a logger"
+      operationId: "get_logger"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "loggerId"
+          in: "path"
+          description: "ID of logger that needs to be fetched"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/logger"
+        400:
+          description: "Invalid ID supplied"
+          schema:
+            $ref: '#/definitions/errorModel'
+        404:
+          description: "logger not found"
+          schema:
+            $ref: '#/definitions/errorModel'
+    put:
+      tags:
+      - "logger"
+      summary: "Updates a logger with form data"
+      description: "update logger by Id"
+      operationId: "update_logger"
+      parameters:
+        - name: "loggerId"
+          in: "path"
+          description: "ID of logger that needs to be updated"
+          required: true
+          type: "string"
+        - in: "body"
+          name: "body"
+          description: "Logger object that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/logger"
+      responses:
+        200:
+          description: "Logger object updated"
+        400:
+          description: "Invalid logger supplied"
+          schema:
+            $ref: '#/definitions/errorModel'
+        404:
+          description: "Logger not found"
+          schema:
+            $ref: '#/definitions/errorModel'
+        405:
+          description: "Invalid input"
+          schema:
+            $ref: '#/definitions/errorModel'
+definitions:
+  logger:
+    type: object
+    required:
+      - id
+      - level
+    properties:
+      id:
+        type: "string"
+        description: "id of logger"
+      level:
+        type: "string"
+        description: "level of logger"
+      rule:
+        type: "string"
+        description: "rule of logger"
+  errorModel:
+    type: object
+    properties:
+      status:
+        type: integer
+        format: int32
+      type:
+        type: string
+      title:
+        type: string
+      detail:
+        type: string
+      instance:
+        type: string       
