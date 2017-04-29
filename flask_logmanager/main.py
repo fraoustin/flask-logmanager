@@ -12,6 +12,11 @@ def static_web_index():
 def static_web(filename):
     if filename == "index.html":
         return redirect(request.url[:-1 * len('index.html')])
+    if filename == "swagger.yaml":
+        swagger = open(join(dirname(__file__),'swagger-ui','swagger.yaml'),'r').read()
+        swagger = swagger.replace('$host$', "%s:%s" % (request.environ['SERVER_NAME'], request.environ['SERVER_PORT']) )
+        swagger = swagger.replace('$path$', [current_app.blueprints[i] for i in current_app.blueprints if current_app.blueprints[i].__class__.__name__ == 'LogManager'][0].url_prefix )
+        return swagger
     return send_from_directory(join(dirname(__file__),'swagger-ui'),filename)
 
 def get_logger_by_rule(rule):
