@@ -7,6 +7,11 @@ Feature
 # add ihm for management log
 # add ihm for visualization log
 
+V. 0.2.2
+========
+
+- hotfix for dynamic host and port in swagger.yaml
+
 V. 0.2.0
 ========
 
