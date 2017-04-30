@@ -7,6 +7,11 @@ Feature
 # add ihm for management log
 # add ihm for visualization log
 
+V. 0.2.3
+========
+
+- hotfix for error 405 on set logger
+
 V. 0.2.2
 ========
 
