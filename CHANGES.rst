@@ -7,6 +7,11 @@ Feature
 # add ihm for management log
 # add ihm for visualization log
 
+V. 0.2.4
+========
+
+- hotfix for base_model
+
 V. 0.2.3
 ========
 
