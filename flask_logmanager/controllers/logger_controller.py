@@ -47,6 +47,6 @@ def set_logger(loggerId):
     """
     data = json.loads(request.data.decode())
     if loggerId != data['id']:
-        return Error(status=405, title='invalid INPUT', type='RG-003', detail='loggerId is not compatible with logger object')
+        raise Error(status=405, title='invalid INPUT', type='RG-003', detail='loggerId is not compatible with logger object')
     body = Logger().from_dict(data)
     return data

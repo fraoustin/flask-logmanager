@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-    Setup for flask-logging
+    Setup for flask-logmanager
 """
 
 import os
