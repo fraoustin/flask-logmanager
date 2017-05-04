@@ -95,4 +95,6 @@ class LogManager(Blueprint):
         current_app.logger.addHandler = addHandler
         current_app.logger.debug('end init of LogManager')
 
-
+    @property
+    def endpoints(self):
+        return ["%s.%s" % (self.name, i) for i in ['get_loggers','get_logger','set_logger']]

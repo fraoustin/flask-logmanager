@@ -7,6 +7,11 @@ Feature
 # add ihm for management log
 # add ihm for visualization log
 
+V. 0.2.5
+========
+
+- add property endpoints for flask-bluelogin
+
 V. 0.2.4
 ========
 
