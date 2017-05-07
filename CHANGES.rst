@@ -3,9 +3,11 @@ Feature
 
 # add management login: user and group
 # test with connexion application
-# colorized log console
-# add ihm for management log
-# add ihm for visualization log
+
+V. 0.2.6
+========
+
+- add level default 
 
 V. 0.2.5
 ========
