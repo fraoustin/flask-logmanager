@@ -54,8 +54,9 @@ def addHandler(hl):
 
 class LogManager(Blueprint):
 
-    def __init__(self, name='logmanager', import_name=__name__, ui_testing=False, by_rule=True, *args, **kwargs):
+    def __init__(self, name='logmanager', import_name=__name__, ui_testing=False, by_rule=True, level=None, *args, **kwargs):
         Blueprint.__init__(self, name, import_name, *args, **kwargs)
+        self._level = level
         self.add_url_rule('/loggers', 'get_loggers', get_loggers, methods=['GET'])
         self.add_url_rule('/logger/<loggerId>', 'get_logger', get_logger, methods=['GET'])
         self.add_url_rule('/logger/<loggerId>', 'set_logger', set_logger, methods=['PUT'])
@@ -69,10 +70,11 @@ class LogManager(Blueprint):
         current_app.logger.debug('start init of logManager')
         #reset level of logger
         current_app.logger.debug('reset level of logger')
-        levels = [current_app.logger.getEffectiveLevel(),]
-        levels = levels + [h.level for h in current_app.logger.handlers]
-        effectiveLevel = max(levels)
-        current_app.logger.setLevel(effectiveLevel)
+        if not self._level:
+            levels = [current_app.logger.getEffectiveLevel(),]
+            levels = levels + [h.level for h in current_app.logger.handlers]
+            self._level = max(levels)
+        current_app.logger.setLevel(self._level)
         for h in current_app.logger.handlers:
             h.setLevel(DEBUG)
         #dynamic logger
