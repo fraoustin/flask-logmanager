@@ -4,6 +4,11 @@ Feature
 # add management login: user and group
 # test with connexion application
 
+V. 0.2.7
+========
+
+- add param url_prefix
+
 V. 0.2.6
 ========
 

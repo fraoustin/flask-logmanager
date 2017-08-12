@@ -54,8 +54,8 @@ def addHandler(hl):
 
 class LogManager(Blueprint):
 
-    def __init__(self, name='logmanager', import_name=__name__, ui_testing=False, by_rule=True, level=None, *args, **kwargs):
-        Blueprint.__init__(self, name, import_name, *args, **kwargs)
+    def __init__(self, name='logmanager', import_name=__name__, ui_testing=False, url_prefix="", by_rule=True, level=None, *args, **kwargs):
+        Blueprint.__init__(self, name, import_name, url_prefix=url_prefix, *args, **kwargs)
         self._level = level
         self.add_url_rule('/loggers', 'get_loggers', get_loggers, methods=['GET'])
         self.add_url_rule('/logger/<loggerId>', 'get_logger', get_logger, methods=['GET'])
