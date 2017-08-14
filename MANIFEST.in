@@ -4,5 +4,5 @@ include CHANGES.rst
 include AUTHORS.txt
 include REQUIREMENTS.txt
 include CLASSIFIERS.txt
-recursive-include flask_monitor *.*
+recursive-include flask_logmanager *.*
 exclude test
