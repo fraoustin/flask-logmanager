@@ -4,6 +4,11 @@ Feature
 # add management login: user and group
 # test with connexion application
 
+V. 0.2.9
+========
+
+- hotfix requirement
+
 V. 0.2.7
 ========
 
