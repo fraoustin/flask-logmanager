@@ -61,8 +61,8 @@ class LogManager(Blueprint):
         self.add_url_rule('/logger/<loggerId>', 'get_logger', get_logger, methods=['GET'])
         self.add_url_rule('/logger/<loggerId>', 'set_logger', set_logger, methods=['PUT'])
         if ui_testing:
-            self.add_url_rule('/loggers/ui/<path:filename>', 'static_web', static_web)
-            self.add_url_rule('/loggers/ui/', 'static_web_index', static_web_index)
+            self.add_url_rule('/ui/<path:filename>', 'static_web', static_web)
+            self.add_url_rule('/ui/', 'static_web_index', static_web_index)
         if by_rule:
             self.before_app_first_request(self._add_dynamics_logger)
 

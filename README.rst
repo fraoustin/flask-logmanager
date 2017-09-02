@@ -52,7 +52,7 @@ Usage
         app.run(port=8080)   #TODO
 
 
-You can change level log of /testone on http://127.0.0.1:8080/api/loggers/ui
+You can change level log of /testone on http://127.0.0.1:8080/api/ui
 
 If you want change level in your application
 
