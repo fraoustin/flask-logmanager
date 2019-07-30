@@ -106,6 +106,8 @@ class Logger(Model):
         :type rule: str
         """
         if self.id is not None:
+            if '_rule' in getLogger(self.id).__dict__ and getLogger(self.id)._rule != rule:
+                raise ValueError("Invalid value for `rule`, you can not change value of rule: %s" % getLogger(self.id)._rule)
             getLogger(self.id)._rule = rule
         self._rule = rule
 

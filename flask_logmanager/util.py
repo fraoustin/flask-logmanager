@@ -59,7 +59,7 @@ def to_json(fn):
     def _request_fn(*args, **kw):
         try:
             fn_exec = fn(*args, **kw)
-            return json.dumps(fn_exec)
+            return json.dumps(fn_exec, sort_keys=True, indent=4, separators=(',', ': '))
         except Error as e:
             return e.to_problem()
         else:

@@ -54,6 +54,11 @@ Usage
 
 You can change level log of /testone on http://127.0.0.1:8080/api/ui
 
+
+.. image:: https://github.com/fraoustin/flask-logmanager/blob/master/test/ui.png
+    :alt: ui
+    :align: center
+
 If you want change level in your application
 
 ::

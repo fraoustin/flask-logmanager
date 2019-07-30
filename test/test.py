@@ -21,6 +21,9 @@ def warning():
 
 @app.route('/search')
 def search():
+    current_app.logger.error("error from search")
+    current_app.logger.info("info from search")
+    current_app.logger.debug("debug from search")
     location = request.args.get('location')
     return  location
 
